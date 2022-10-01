@@ -28,7 +28,7 @@ export default {
     withPluginApi("0.8.40", (api) => {
       api.onPageChange(() => {
         loadScript(
-          "https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"
+          "https://chirpset.com/uploads/default/original/2X/6/6d3e11174e22668e69df236e5c4542168f7cbfec.js"
         ).then(() => {
           if (document.querySelector(".tiles-style")) {
             imagesLoaded(
