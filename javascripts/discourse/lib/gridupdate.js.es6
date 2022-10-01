@@ -5,7 +5,7 @@ window.addEventListener ('scroll', resizeAllGridItems);
 
 function resizeGridItem (item, grid, rowHeight, rowGap) {
   loadScript (
-    'https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js'
+    'https://chirpset.com/uploads/default/original/2X/6/6d3e11174e22668e69df236e5c4542168f7cbfec.js'
   ).then (() => {
     imagesLoaded (item, function () {
       const contentHeight = item.firstElementChild.getBoundingClientRect().height;
