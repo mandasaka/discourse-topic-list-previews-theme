@@ -561,6 +561,14 @@ export default {
             controller.send("showLogin");
           }
         },
+          
+        _titleElement() {
+          if (this.element !== undefined && this.element !== null) {
+            return this.element.querySelector(".main-link .title");
+          } else {
+            return false;
+          }
+        },
       });
 
       api.modifyClass("component:search-result-entries", {
@@ -570,17 +578,18 @@ export default {
 
         @discourseComputed
         thumbnailGrid() {
-          const siteSettings = container.lookup("site-settings:main");
+          const siteSettings = container.lookup("service:site-settings");
 
           return siteSettings.topic_list_search_previews_enabled
         },
       });
 
       api.modifyClass("component:search-result-entry", {
+        pluginId: PLUGIN_ID,
 
         @discourseComputed
         thumbnailGrid() {
-          const siteSettings = container.lookup("site-settings:main");
+          const siteSettings = container.lookup("service:site-settings");
 
           return siteSettings.topic_list_search_previews_enabled
         },
