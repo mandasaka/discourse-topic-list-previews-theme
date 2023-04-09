@@ -28,7 +28,7 @@ export default {
     withPluginApi("0.8.40", (api) => {
       api.onPageChange(() => {
         loadScript(
-          "https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/5.0.0/imagesloaded.pkgd.min.js"
+          "https://cdn.bootcdn.net/ajax/libs/jquery.imagesloaded/5.0.0/imagesloaded.pkgd.min.js"
         ).then(() => {
           if (document.querySelector(".tiles-style")) {
             imagesLoaded(
