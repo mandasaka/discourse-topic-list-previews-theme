@@ -21,7 +21,7 @@ function resizeAllGridItems () {
   const allItems = document.getElementsByClassName ('tiles-grid-item');
   let grid = false;
 
-  grid = document.getElementsByTagName('tbody')[0];
+  grid = document.getElementsByClassName('topic-list-body')[0];
 
   if (!grid) {
     return;
