@@ -11,7 +11,7 @@ import PostsCountColumn from "discourse/raw-views/list/posts-count-column";
 import { resizeAllGridItems } from "../lib/gridupdate";
 import Topic from "discourse/models/topic";
 import loadScript from "discourse/lib/load-script";
-import { cookAsync } from "discourse/lib/text";
+import { cook } from "discourse/lib/text";
 import { debounce } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { readOnly } from "@ember/object/computed";
