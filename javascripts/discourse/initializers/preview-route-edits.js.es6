@@ -37,12 +37,12 @@ export default {
       ]);
     });
 
-    discoveryTopicRoutes.forEach(function(route){
-      var route = container.lookup(`route:discovery.${route}`);
-      route.reopen({
-        model(data, transition) {
-          return this._super(data, transition).then((result) => {
-            if (settings.topic_list_featured_images) {
+    if (settings.topic_list_featured_images) {
+      discoveryTopicRoutes.forEach(function(route){
+        var route = container.lookup(`route:discovery.${route}`);
+        route.reopen({
+          model(data, transition) {
+            return this._super(data, transition).then((result) => {
               let featuredTopics = null;
               let filter = `tag/${settings.topic_list_featured_images_tag}`;
               let lastTopicList = findOrResetCachedTopicList (this.session, filter);
@@ -52,19 +52,20 @@ export default {
                 });
                 this.controllerFor('discovery').set('featuredTopics', this.featuredTopics);
               });
-            }
-            return result;
-          })
-        }
-      });
-    });
 
-    discoveryCategoryRoutes.forEach(function(route){
-      var route = container.lookup(`route:discovery.${route}`);
-      route.reopen({
-        afterModel(model, transition) {
-          return this._super(model, transition).then((result) => {
-            if (settings.topic_list_featured_images_category) {
+              return result;
+            })
+          }
+        });
+      });
+    }
+
+    if (settings.topic_list_featured_images_category) {
+      discoveryCategoryRoutes.forEach(function(route){
+        var route = container.lookup(`route:discovery.${route}`);
+        route.reopen({
+          afterModel(model, transition) {
+            return this._super(model, transition).then((result) => {
               let featuredTopics = null;
               let filter = `tag/${settings.topic_list_featured_images_tag}`;
               let lastTopicList = findOrResetCachedTopicList (this.session, filter);
@@ -75,26 +76,13 @@ export default {
 
                 this.controllerFor('discovery').set('featuredTopics', this.featuredTopics);
               });
-            }
-            return result;
-          })
-        }
+
+              return result;
+            })
+          }
+        });
       });
-    });
-
-    withPluginApi('0.8.12', api => {
-      api.modifyClass(`route:discovery-categories`, {
-        pluginId: PLUGIN_ID,
-
-        setFeaturedTopics() {
-          let sortOrder = settings.topic_list_featured_images_created_order ? "created" : "activity";
-
-          let filterObject = {
-            filter: "latest",
-            params: {
-              tags: [`${settings.topic_list_featured_images_tag}`],
-              order: sortOrder,
-            },
+    }
           }
 
           this.store.findFiltered ("topicList", filterObject).then (list => {
