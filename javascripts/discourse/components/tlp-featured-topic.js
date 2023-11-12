@@ -1,23 +1,31 @@
-import { inject as service } from "@ember/service";
+import { cook } from 'discourse/lib/text';
 import { computed } from "@ember/object";
 import Component from '@glimmer/component';
+import { tracked } from "@glimmer/tracking";
+import { inject as service } from "@ember/service";
 
-export default class TlpFeaturedTopicComponent extends Component {
-  @service currentUser;
+export default class TlpFeaturedTopicsComponent extends Component {
+  @service appEvents;
+  @tracked featuredTitle = "";
 
-  @computed
-  get featuredUser() {
-    return this.args.topic.posters[0].user;
+  constructor() {
+    super(...arguments);
+    this.appEvents.trigger('topic:refresh-timeline-position');
+
+    if (this.showFeaturedTitle) {
+      const raw = settings.topic_list_featured_title;
+      cook(raw).then((cooked) => this.featuredTitle = cooked);
+    }
   };
 
   @computed
-  get featuredUsername() {
-    return this.args.topic.posters[0].user.username;
+  get hasTopics() {
+    return this.args.featuredTopics.length > 0;
   };
 
   @computed
-  get featuredExcerpt() {
-    return (settings.topic_list_featured_excerpt > 0 && this.args.topic.excerpt) ? this.args.topic.excerpt.slice(0,settings.topic_list_featured_excerpt) : false;
+  get showFeaturedTitle() {
+    return settings.topic_list_featured_title;
   };
 
   @computed
@@ -25,13 +33,9 @@ export default class TlpFeaturedTopicComponent extends Component {
     return settings.topic_list_featured_images_tag.split('|');
   };
 
-  @computed('args.topic.tags')
-  get featuredTag() {
-    return this.args.topic.tags.filter(tag => this.featuredTags.indexOf(tag) > -1)[0];
-  };
-
-  @computed('args.topic.id')
-  get href() {
-    return `/t/${this.args.topic.id}`;
+  @computed
+  get showFeaturedTags() {
+    return this.featuredTags &&
+           settings.topic_list_featured_images_tag_show;
   };
 };
