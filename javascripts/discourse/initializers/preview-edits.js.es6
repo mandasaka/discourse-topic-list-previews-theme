@@ -211,7 +211,7 @@ export default {
               }
             }
             const raw = topic.excerpt;
-            cookAsync(raw).then((cooked) => this.set("excerpt", cooked));
+            cook(raw).then((cooked) => this.set("excerpt", cooked));
           }
 
           const obj = PostsCountColumn.create({ topic });
