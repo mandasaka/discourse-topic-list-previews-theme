@@ -59,7 +59,7 @@ export default {
         });
       });
     }
-
+    
     if (settings.topic_list_featured_images_category) {
       discoveryCategoryRoutes.forEach(function(route){
         var route = container.lookup(`route:discovery.${route}`);
@@ -83,63 +83,79 @@ export default {
         });
       });
     }
-          }
 
-          this.store.findFiltered ("topicList", filterObject).then (list => {
-            this.setProperties ({
-              featuredTopics: EmberObject.create (list),
-            });
+    if(settings.topic_list_featured_images_tag){
+      withPluginApi('0.8.12', api => {
+        api.modifyClass(`route:discovery-categories`, {
+          pluginId: PLUGIN_ID,
 
-            this.controllerFor('discovery').set('featuredTopics', this.featuredTopics);
-          })
-        },
+          setFeaturedTopics() {
+            let sortOrder = settings.topic_list_featured_images_created_order ? "created" : "activity";
 
-        // unfortunately we have to override this whole method to extract the featured topics
-        _findCategoriesAndTopics(filter) {
-          PreloadStore.reset();
-          return hash({
-            wrappedCategoriesList: PreloadStore.getAndRemove("categories_list"),
-            topicsList: PreloadStore.getAndRemove(`topic_list_${filter}`)
-          }).then((response) => {
-            let { wrappedCategoriesList, topicsList } = response;
-            let categoriesList =
-              wrappedCategoriesList && wrappedCategoriesList.category_list;
-
-            this.setFeaturedTopics();
-
-            if (categoriesList && topicsList) {
-              if (topicsList.topic_list && topicsList.topic_list.top_tags) {
-                Site.currentProp("top_tags", topicsList.topic_list.top_tags);
-              }
-
-              return EmberObject.create({
-                categories: CategoryList.categoriesFrom(
-                  this.store,
-                  wrappedCategoriesList
-                ),
-                topics: TopicList.topicsFrom(this.store, topicsList),
-                can_create_category: categoriesList.can_create_category,
-                can_create_topic: categoriesList.can_create_topic,
-                loadBefore: this._loadBefore(store),
-              });
+            let filterObject = {
+              filter: "latest",
+              params: {
+                tags: [`${settings.topic_list_featured_images_tag}`],
+                order: sortOrder,
+              },
             }
-            // Otherwise, return the ajax result
-            return ajax(`/categories_and_${filter}`).then(result => {
-              if (result.topic_list && result.topic_list.top_tags) {
-                Site.currentProp("top_tags", result.topic_list.top_tags);
-              }
 
-              return EmberObject.create({
-                categories: CategoryList.categoriesFrom(this.store, result),
-                topics: TopicList.topicsFrom(this.store, result),
-                can_create_category: result.category_list.can_create_category,
-                can_create_topic: result.category_list.can_create_topic,
-                loadBefore: this._loadBefore(this.store),
+            this.store.findFiltered ("topicList", filterObject).then (list => {
+              this.setProperties ({
+                featuredTopics: EmberObject.create (list),
+              });
+
+              this.controllerFor('discovery').set('featuredTopics', this.featuredTopics);
+            })
+          },
+
+          // unfortunately we have to override this whole method to extract the featured topics
+          _findCategoriesAndTopics(filter) {
+            PreloadStore.reset();
+            return hash({
+              wrappedCategoriesList: PreloadStore.getAndRemove("categories_list"),
+              topicsList: PreloadStore.getAndRemove(`topic_list_${filter}`)
+            }).then((response) => {
+              let { wrappedCategoriesList, topicsList } = response;
+              let categoriesList =
+                wrappedCategoriesList && wrappedCategoriesList.category_list;
+
+              this.setFeaturedTopics();
+
+              if (categoriesList && topicsList) {
+                if (topicsList.topic_list && topicsList.topic_list.top_tags) {
+                  Site.currentProp("top_tags", topicsList.topic_list.top_tags);
+                }
+
+                return EmberObject.create({
+                  categories: CategoryList.categoriesFrom(
+                    this.store,
+                    wrappedCategoriesList
+                  ),
+                  topics: TopicList.topicsFrom(this.store, topicsList),
+                  can_create_category: categoriesList.can_create_category,
+                  can_create_topic: categoriesList.can_create_topic,
+                  loadBefore: this._loadBefore(store),
+                });
+              }
+              // Otherwise, return the ajax result
+              return ajax(`/categories_and_${filter}`).then(result => {
+                if (result.topic_list && result.topic_list.top_tags) {
+                  Site.currentProp("top_tags", result.topic_list.top_tags);
+                }
+
+                return EmberObject.create({
+                  categories: CategoryList.categoriesFrom(this.store, result),
+                  topics: TopicList.topicsFrom(this.store, result),
+                  can_create_category: result.category_list.can_create_category,
+                  can_create_topic: result.category_list.can_create_topic,
+                  loadBefore: this._loadBefore(this.store),
+                });
               });
             });
-          });
-        }
+          }
+        });
       });
-    });
+    }
   }
 };
